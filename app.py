@@ -61,14 +61,15 @@ def tobs():
 
     return jsonify(tobs_results)
 
-@app.route("/api/v1.0/<start>")
+@app.route("/api/v1.0/start")
 def start():
     start_date=dt.date(2017,8,23) - dt.timedelta(days=365)
-
-    start_stats = session.query(func.min(Measurement.tobs),func.avg(Measurement.tobs),func.max(Measurement.tobs).filter(Measurement.date>=start_date)
+    start_stats = session.query(func.min(Measurement.tobs),func.avg(Measurement.tobs),func.max(Measurement.tobs).filter(Measurement.date>=start_date).all()
+    start_stats_list = list(np.ravel(start_stats))
+    return jsonify(start_stats_list)
 
 @app.route("/api/v1.0/<start>/<end>")
-def start():
+startend():
     start_date=dt.date(2017,1,20)
     end_date = dt.date(2017,1,31)
     
