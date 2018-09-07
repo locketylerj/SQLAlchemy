@@ -24,8 +24,8 @@ def welcome():
         f"/api/v1.0/precipitation<br/>"
         f"/api/v1.0/stations<br/>"
         f"/api/v1.0/tobs<br/>"
-        f"/api/v1.0/<start><br/>"
-        f"/api/v1.0/<start>/<end>"
+        f"/api/v1.0/start<br/>"
+        f"/api/v1.0/startend"
     )
 @app.route("/api/v1.0/precipitation")
 def precipitation():
@@ -62,19 +62,19 @@ def tobs():
     return jsonify(tobs_results)
 
 @app.route("/api/v1.0/start")
-def start():
-    start_date=dt.date(2017,8,23) - dt.timedelta(days=365)
-    start_stats = session.query(func.min(Measurement.tobs),func.avg(Measurement.tobs),func.max(Measurement.tobs).filter(Measurement.date>=start_date).all()
+def start(start):
+    start_date = dt.datetime.strptime(start, "%Y-%m-%d")
+    start_stats = session.query(func.min(Measurement.tobs),func.avg(Measurement.tobs),func.max(Measurement.tobs)).filter(Measurement.date>=start_date).all()
     start_stats_list = list(np.ravel(start_stats))
     return jsonify(start_stats_list)
 
-@app.route("/api/v1.0/<start>/<end>")
-startend():
-    start_date=dt.date(2017,1,20)
-    end_date = dt.date(2017,1,31)
-    
-
-    start_end_stats = session.query(func.min(Measurement.tobs),func.avg(Measurement.tobs),func.max(Measurement.tobs).filter(Measurement.date>=start_date).filter(Measurement.date<=end_date)
+@app.route("/api/v1.0/startend")
+def startend(start,end):
+    start_date = dt.datetime.strptime(start, "%Y-%m-%d")
+    end_date = dt.datetime.strptime(end, "%Y-%m-%d")
+    start_end_stats = session.query(func.min(Measurement.tobs),func.avg(Measurement.tobs),func.max(Measurement.tobs)).filter(Measurement.date>=start_date).filter(Measurement.date<=end_date).all()
+    start_end_list = list(np.ravel(start_end_stats))
+    return jsonify(start_end_list)
 
 if __name__ == '__main__':
     app.run(debug=True)
