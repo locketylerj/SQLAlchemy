@@ -24,8 +24,10 @@ def welcome():
         f"/api/v1.0/precipitation<br/>"
         f"/api/v1.0/stations<br/>"
         f"/api/v1.0/tobs<br/>"
-        f"/api/v1.0/start<br/>"
-        f"/api/v1.0/startend"
+        f"For average, max, and min temperatures after a certain start date enter the start date below in YYYY-M_DD format<br>"
+        f"/api/v1.0/<start><br/>"
+        f"For average, max, and min temperatures between a start and end date enter the dates below in YYYY-M_DD format with a slash between start and end dates<br>"
+        f"/api/v1.0/<start>/<end>"
     )
 @app.route("/api/v1.0/precipitation")
 def precipitation():
@@ -61,18 +63,18 @@ def tobs():
 
     return jsonify(tobs_results)
 
-@app.route("/api/v1.0/start")
+@app.route("/api/v1.0/<start>")
 def start(start):
-    start_date = dt.datetime.strptime(start, "%Y-%m-%d")
-    start_stats = session.query(func.min(Measurement.tobs),func.avg(Measurement.tobs),func.max(Measurement.tobs)).filter(Measurement.date>=start_date).all()
+    start = dt.datetime.strptime(start, "%Y-%m-%d")
+    start_stats = session.query(func.min(Measurement.tobs),func.avg(Measurement.tobs),func.max(Measurement.tobs)).filter(Measurement.date>=start).all()
     start_stats_list = list(np.ravel(start_stats))
     return jsonify(start_stats_list)
 
-@app.route("/api/v1.0/startend")
+@app.route("/api/v1.0/<start>/<end>")
 def startend(start,end):
-    start_date = dt.datetime.strptime(start, "%Y-%m-%d")
-    end_date = dt.datetime.strptime(end, "%Y-%m-%d")
-    start_end_stats = session.query(func.min(Measurement.tobs),func.avg(Measurement.tobs),func.max(Measurement.tobs)).filter(Measurement.date>=start_date).filter(Measurement.date<=end_date).all()
+    start = dt.datetime.strptime(start, "%Y-%m-%d")
+    end = dt.datetime.strptime(end, "%Y-%m-%d")
+    start_end_stats = session.query(func.min(Measurement.tobs),func.avg(Measurement.tobs),func.max(Measurement.tobs)).filter(Measurement.date>=start).filter(Measurement.date<=end).all()
     start_end_list = list(np.ravel(start_end_stats))
     return jsonify(start_end_list)
 
